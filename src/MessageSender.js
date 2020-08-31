@@ -1,9 +1,14 @@
 import React, { useState} from 'react'
 import "./MessageSender.css"
 import { Avatar } from "@material-ui/core"
-import { Videocam, PhotoLibrary, InsertEmoticon} from "@material-ui/icons"
+import { Videocam, PhotoLibrary, InsertEmoticon} from "@material-ui/icons";
+import { useStateValue } from "./StateProvider";
+import db from "./firebase"
+import firebase from "firebase"
 
 function MessageSender() {
+
+    const [{ user }, dispatch] = useStateValue();
 
     const [ input, setInput] = useState("");
     const [ imageURl, setImageUrl] = useState("")
@@ -13,6 +18,14 @@ function MessageSender() {
         
         //some clever db stuff
 
+        db.collection('posts').add({
+           messaage: input,
+           timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+           profilePic: user.photoURL,
+           username: user.displayName,
+           image: imageURl,
+        })
+
         setInput("")
         setImageUrl("")
     }
@@ -21,13 +34,13 @@ function MessageSender() {
         <div className="messageSender">
 
             <div className="messageSender__top">
-                <Avatar />
+                <Avatar  src={user.photoURL}/>
                 <form >
                     <input 
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
                     className="messageSender__input"
-                    placeholder={`What's on your mind?`}
+                    placeholder={`What's on your mind, ${user.displayName}?`}
                     />
                     <input 
                     value={imageURl}

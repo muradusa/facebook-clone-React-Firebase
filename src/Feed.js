@@ -1,31 +1,39 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import "./Feed.css"
 import StoryReel from "./StoryReel"
 import MessageSender from "./MessageSender"
-import Post from "./Post"
+import Post from "./Post";
+import db from "./firebase"
 
 
 function Feed() {
+
+    const [posts, setPosts] = useState([]);
+
+    useEffect(() => {
+        db.collection("posts")
+        .orderBy("timestamp", "desc")
+        .onSnapshot((snapshot) => 
+        setPosts(snapshot.docs.map((doc) => ({ id: doc.id, data: doc.data() }))));
+    }, []);
+
     return (
         <div className="feed">
             <StoryReel />
             <MessageSender />
-            <Post 
-            profilePic="https://i.mycdn.me/i?r=AzEPZsRbOZEKgBhR0XGMT1RkBbxel-voqLUp3tAXXC2rm6aKTM5SRkZCeTgDn6uOyic"
-            message="WOW this works"
-            timestamp="This is a timestamp"
-            username="muradusa"
-            image="https://images.unsplash.com/photo-1484263445322-ff82b9cb51cf?ixlib=rb-1.2.1&auto=format&fit=crop&w=750&q=80
-            "
-            />
-            <Post 
-            profilePic="https://i.mycdn.me/i?r=AzEPZsRbOZEKgBhR0XGMT1RkBbxel-voqLUp3tAXXC2rm6aKTM5SRkZCeTgDn6uOyic"
-            message="WOW this works"
-            timestamp="This is a timestamp"
-            username="muradusa"
-            image="https://images.unsplash.com/photo-1484263445322-ff82b9cb51cf?ixlib=rb-1.2.1&auto=format&fit=crop&w=750&q=80
-            "
-            />
+
+            {posts.map((post) => (
+                <Post 
+                key={post.data.id}
+                profilePic={post.data.profilePic}
+                message={post.data.messaage}
+                timestamp={post.data.timestamp}
+                username={post.data.username}
+                image={post.data.image}
+                />
+            ))}
+            
+           
         </div>
     )
 }
