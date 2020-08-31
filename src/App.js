@@ -8,6 +8,8 @@ import { useStateValue } from "./StateProvider"
 
 import "./App.css";
 
+//This is some good stuff
+
 function App() {
   const [{ user }, dispatch] = useStateValue();
 
